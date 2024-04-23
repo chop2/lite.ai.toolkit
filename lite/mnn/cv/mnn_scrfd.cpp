@@ -149,12 +149,34 @@ void MNNSCRFD::generate_bboxes_kps(const SCRFDScaleParams &scale_params,
                                    float img_width)
 {
   // score_8,score_16,score_32,bbox_8,bbox_16,bbox_32
-  auto device_score_8 = output_tensors.at("score_8");
-  auto device_score_16 = output_tensors.at("score_16");
-  auto device_score_32 = output_tensors.at("score_32");
-  auto device_bbox_8 = output_tensors.at("bbox_8");
-  auto device_bbox_16 = output_tensors.at("bbox_16");
-  auto device_bbox_32 = output_tensors.at("bbox_32");
+  std::string score_8 = "score_8";
+  std::string score_16 = "score_16";
+  std::string score_32 = "score_32";
+  std::string bbox_8 = "bbox_8";
+  std::string bbox_16 = "bbox_16";
+  std::string bbox_32 = "bbox_32";
+  std::string kps_8 = "kps_8";
+  std::string kps_16 = "kps_16";
+  std::string kps_32 = "kps_32";
+
+  if(true) {
+      score_8 = "448";
+      score_16 = "471";
+      score_32 = "494";
+      bbox_8 = "451";
+      bbox_16 = "474";
+      bbox_32 = "497";
+      kps_8 = "454";
+      kps_16 = "477";
+      kps_32 = "500";
+  }
+
+  auto device_score_8 = output_tensors.at(score_8);
+  auto device_score_16 = output_tensors.at(score_16);
+  auto device_score_32 = output_tensors.at(score_32);
+  auto device_bbox_8 = output_tensors.at(bbox_8);
+  auto device_bbox_16 = output_tensors.at(bbox_16);
+  auto device_bbox_32 = output_tensors.at(bbox_32);
   this->generate_points(input_height, input_width);
 
   MNN::Tensor host_score_8(device_score_8, device_score_8->getDimensionType());
@@ -175,9 +197,9 @@ void MNNSCRFD::generate_bboxes_kps(const SCRFDScaleParams &scale_params,
 
   if (use_kps)
   {
-    auto device_kps_8 = output_tensors.at("kps_8");
-    auto device_kps_16 = output_tensors.at("kps_16");
-    auto device_kps_32 = output_tensors.at("kps_32");
+    auto device_kps_8 = output_tensors.at(kps_8);
+    auto device_kps_16 = output_tensors.at(kps_16);
+    auto device_kps_32 = output_tensors.at(kps_32);
 
     MNN::Tensor host_kps_8(device_kps_8, device_kps_8->getDimensionType());
     MNN::Tensor host_kps_16(device_kps_16, device_kps_16->getDimensionType());
@@ -292,7 +314,7 @@ void MNNSCRFD::generate_bboxes_kps_single_stride(
   nms_pre_ = nms_pre_ >= nms_pre ? nms_pre_ : nms_pre;
 
   auto stride_dims = score_pred.shape();
-  const unsigned int num_points = stride_dims.at(1);  // 12800
+  const unsigned int num_points = stride_dims.at(0);  // 12800
   const float *score_ptr = score_pred.host<float>();  // [1,12800,1]
   const float *bbox_ptr = bbox_pred.host<float>();    // [1,12800,4]
   const float *kps_ptr = kps_pred.host<float>();      // [1,12800,10]
